@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -12,13 +13,20 @@ namespace Project2
 {
     public class movieViewModel:INotifyPropertyChanged
     {
+        public string UserName {  get; set; }
         private HttpClient _httpClient = new HttpClient();
         private List<Movie> allMovies = new List<Movie>();
+        public event PropertyChangedEventHandler? PropertyChanged;
 
 
         //it adds it to the collectionView
         public ObservableCollection<Movie> Movies { get; set; } = new ObservableCollection<Movie>();
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public ObservableCollection<Movie> ViewMovies { get; set; } = new ObservableCollection<Movie>();
+        public ObservableCollection<Movie> FavoriteMovies { get; set; } = new ObservableCollection<Movie>();
+        public ObservableCollection<MovieHistory> History { get; set; } = new ObservableCollection<MovieHistory>();
+
+
+
 
         protected virtual void OnPropertyChanged(string? propertyName = null)
         {
@@ -38,12 +46,19 @@ namespace Project2
         }
         public Command<string> SearchCommand { get; set; }
 
-        public movieViewModel()
+        public movieViewModel(string userName)
         {
+            UserName = userName;
             SearchCommand = new Command<string>((text) =>
             {
                 SearchMovie = text;
             });
+            Movies = new ObservableCollection<Movie>();
+            History = new ObservableCollection<MovieHistory>(HistorySandL.Load(UserName));
+            foreach (var movie in Movies)
+            {
+                movie.PropertyChanged += MoviePropertyChanged;
+            }
         }
         private Movie _selectedMovie;
         public Movie SelectedMovie
@@ -51,8 +66,16 @@ namespace Project2
             get => _selectedMovie;
             set
             {
-                _selectedMovie = value;
                 OnPropertyChanged(nameof(SelectedMovie));
+                if (_selectedMovie != value && value != null)
+                {
+                    _selectedMovie = value;
+                    value.IsViewed = true;
+                    if(!ViewMovies.Contains(value))
+                    {
+                            ViewMovies.Add(value);
+                    }
+                }
             }
         }
         //this stores the name of the user
@@ -139,6 +162,72 @@ m.title.Contains(SearchMovie, StringComparison.OrdinalIgnoreCase) ||
             foreach (var movie in filtered)
                 Movies.Add(movie);
 
+        }
+        private void _PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if(sender is Movie movie && e.PropertyName == nameof(Movie.IsFavorite))
+            {
+                if(movie.IsFavorite && !FavoriteMovies.Contains(movie))
+                     FavoriteMovies.Add(movie);
+                else if(!movie.IsFavorite && FavoriteMovies.Contains(movie))
+                    FavoriteMovies.Remove(movie);
+            }
+        }
+        public IEnumerable<Movie> ViewedRecently =>
+            Movies
+            .Where(m => m.ViewedAt != null)
+            .OrderByDescending(m => m.ViewedAt);
+
+        public IEnumerable<Movie> FavoritedRecently =>
+  Movies
+  .Where(m => m.FavoritedAt != null)
+  .OrderByDescending(m => m.FavoritedAt);
+        // public event PropertyChangedEventHandler PropertyChanged;
+        //  protected void OnPropertyChanged([CallerMemberName] string name = null)
+        //  => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+       /* public movieViewModel()
+        {
+            Movies = new ObservableCollection<Movie>();
+            History = new ObservableCollection<MovieHistory>(HistorySandL.Load());
+            foreach (var movie in Movies)
+            {
+                movie.PropertyChanged += MoviePropertyChanged;
+            }
+        }*/
+        private void MoviePropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (sender is not Movie movie)
+            {
+                return;
+            }
+            if (e.PropertyName == nameof(Movie.IsFavorite) && movie.IsFavorite)
+            {
+                AddHistory(movie, "Favorited");
+            }
+        }
+
+        public void MarkAsViewed(Movie movie)
+        {
+            if (!movie.IsViewed)
+            {
+                movie.IsViewed = true;
+                AddHistory(movie, "Viewed");
+            }
+        }
+        private void AddHistory(Movie movie, string action)
+        {
+            History.Add(new MovieHistory
+            {
+                title = movie.title,
+                year = movie.year,
+                genre = movie.genre,
+                emoji = movie.emoji,
+                Action = action,    
+                Timestamp = DateTime.Now,
+
+            });
+                HistorySandL.Save(UserName, History.ToList());
         }
     }
 }

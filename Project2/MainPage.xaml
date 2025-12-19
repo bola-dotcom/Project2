@@ -4,10 +4,13 @@
              x:Class="Project2.MainPage">
     <ScrollView>
         <VerticalStackLayout>
-            <Label Text="Welcome" HorizontalOptions="Center" VerticalOptions="Center" FontAttributes ="Bold" FontSize="30" TextColor="AliceBlue"/>
+            <Label Text="Welcome,Enter your name" HorizontalOptions="Center" VerticalOptions="Center" FontAttributes ="Bold" FontSize="30" TextColor="AliceBlue"/>
 
             <Label Text="Name:"/>
             <Entry x:Name="NameBox" Text="{Binding Name}"/>
+            <HorizontalStackLayout>
+                <Button x:Name="Name" Clicked ="OnStartClicked" />
+            </HorizontalStackLayout>
             <!--searchbar function-->
             <SearchBar
            Text="{Binding SearchMovie}"
@@ -23,7 +26,13 @@ SelectedItem="{Binding SelectedMovie}"
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <StackLayout Padding="10">
-                            <Label Text="{Binding title}" FontSize="Medium" FontAttributes="Bold"/>
+                            
+                                <CheckBox
+                                    IsChecked ="{Binding IsFavorite}"
+                                    VerticalOptions ="Center"/>
+                            <Label Text="{Binding title}"
+                                   FontAttributes="Bold"/>
+                           
                             <Label Text="{Binding emoji}" FontSize="Small"/>
                             <Label Text="{Binding year}" FontSize="Small"/>
                             <Label Text="{Binding Genre}" FontSize="Small"/>

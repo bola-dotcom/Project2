@@ -10,6 +10,7 @@ public partial class movieDetailPage : ContentPage
         set
         {
             movieProperty = value;
+            OnPropertyChanged(nameof(MovieProperty));
             BindingContext = movieProperty;
         }
     }
