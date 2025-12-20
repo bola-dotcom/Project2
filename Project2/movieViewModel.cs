@@ -49,16 +49,14 @@ namespace Project2
         public movieViewModel(string userName)
         {
             UserName = userName;
+            Name = userName;    
             SearchCommand = new Command<string>((text) =>
             {
                 SearchMovie = text;
             });
-            Movies = new ObservableCollection<Movie>();
+            
             History = new ObservableCollection<MovieHistory>(HistorySandL.Load(UserName));
-            foreach (var movie in Movies)
-            {
-                movie.PropertyChanged += MoviePropertyChanged;
-            }
+           
         }
         private Movie _selectedMovie;
         public Movie SelectedMovie
@@ -66,20 +64,26 @@ namespace Project2
             get => _selectedMovie;
             set
             {
-                OnPropertyChanged(nameof(SelectedMovie));
                 if (_selectedMovie != value && value != null)
                 {
+                    OnPropertyChanged(nameof(SelectedMovie));
+
                     _selectedMovie = value;
-                    value.IsViewed = true;
-                    if(!ViewMovies.Contains(value))
+                    if (!value.IsViewed)
                     {
+                        value.IsViewed = true;
+                        if (!ViewMovies.Contains(value))
+                        {
                             ViewMovies.Add(value);
+                        }
+                        MarkAsViewed(value);
                     }
                 }
             }
         }
+
         //this stores the name of the user
-        private string _Name = "Your name";
+        private string _Name = "";
         public string Name
         {
             get => _Name;
@@ -96,7 +100,8 @@ namespace Project2
         public async void downloadFile()
         {
             //if this is the first time the application is opened
-
+            if (allMovies.Count > 0)
+                return;
             //gets the link into the response variable
             var response = await _httpClient.GetAsync("https://raw.githubusercontent.com/DonH-ITS/jsonfiles/refs/heads/main/moviesemoji.json");
 
@@ -116,7 +121,7 @@ namespace Project2
                 Movies.Clear();
                 EnterMovies(texts);
                 //each film in the texts list and call it film
-                foreach (var film in texts)
+               /* foreach (var film in texts)
                     // Console.WriteLine(film.title);
                     Movies.Add(new Movie
                     {
@@ -126,7 +131,7 @@ namespace Project2
                         director = film.director,
                         rating = film.rating,
                         emoji = film.emoji
-                    });
+                    })*/
 
             }
         }
@@ -138,7 +143,10 @@ namespace Project2
             allMovies = movieList;
             Movies.Clear();
             foreach (var movie in allMovies)
+            {
+                movie.PropertyChanged += MoviePropertyChanged;
                 Movies.Add(movie);
+            }
         }
         private void FilterMovie()
         {
@@ -163,7 +171,7 @@ m.title.Contains(SearchMovie, StringComparison.OrdinalIgnoreCase) ||
                 Movies.Add(movie);
 
         }
-        private void _PropertyChanged(object sender, PropertyChangedEventArgs e)
+       /* private void _PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if(sender is Movie movie && e.PropertyName == nameof(Movie.IsFavorite))
             {
@@ -172,7 +180,14 @@ m.title.Contains(SearchMovie, StringComparison.OrdinalIgnoreCase) ||
                 else if(!movie.IsFavorite && FavoriteMovies.Contains(movie))
                     FavoriteMovies.Remove(movie);
             }
-        }
+            else if(e.PropertyName == nameof(Movie.IsViewed) && movie.IsViewed)
+            {
+                if (!ViewMovies.Contains(movie))
+                {
+                    ViewMovies.Add(movie);
+                }
+            }
+        }*/
         public IEnumerable<Movie> ViewedRecently =>
             Movies
             .Where(m => m.ViewedAt != null)
@@ -197,15 +212,25 @@ m.title.Contains(SearchMovie, StringComparison.OrdinalIgnoreCase) ||
         }*/
         private void MoviePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (sender is not Movie movie)
-            {
-                return;
-            }
-            if (e.PropertyName == nameof(Movie.IsFavorite) && movie.IsFavorite)
-            {
-                AddHistory(movie, "Favorited");
-            }
-        }
+            if (sender is Movie movie)
+                if (e.PropertyName == nameof(Movie.IsFavorite))
+                {
+                    {
+                        if (movie.IsFavorite && !FavoriteMovies.Contains(movie))
+                            FavoriteMovies.Add(movie);
+                        else if (!movie.IsFavorite && FavoriteMovies.Contains(movie))
+                            FavoriteMovies.Remove(movie);
+                    }
+                }
+                else if (e.PropertyName == nameof(Movie.IsViewed))
+                {
+                    if (movie.IsViewed && !ViewMovies.Contains(movie))
+                    {
+                        ViewMovies.Add(movie);
+                    }
+                }
+                }
+                
 
         public void MarkAsViewed(Movie movie)
         {

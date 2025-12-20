@@ -21,6 +21,9 @@ namespace Project2
         public string director {  get; set; }
         public double rating { get; set; }
         public string emoji { get; set; }
+        private DateTime? viewedAt;
+        private DateTime? favoritedAt;
+
 
         private bool isFavorite;
         public bool IsFavorite { get => isFavorite;
@@ -29,6 +32,8 @@ namespace Project2
                 if (isFavorite != value)
                 {
                     isFavorite = value;
+                    FavoritedAt = value ? DateTime.Now : (DateTime?)null;
+
                     OnPropertyChanged();
 
                 }
@@ -44,13 +49,34 @@ namespace Project2
                 if (isViewed != value)
                 {
                     isViewed = value;
+                    ViewedAt = value ? DateTime.Now : (DateTime?)null;
                     OnPropertyChanged();
                 }
             }
         }
 
-        public DateTime? ViewedAt { get; set; }
-        public DateTime? FavoritedAt { get; set; }
+        public DateTime? ViewedAt { get => favoritedAt;
+            set
+            {
+                if (viewedAt != value)
+                {
+                    viewedAt = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public DateTime? FavoritedAt
+        {
+            get => favoritedAt;
+            set
+            {
+                if (favoritedAt != value)
+                {
+                    favoritedAt = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name =null)

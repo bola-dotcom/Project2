@@ -3,13 +3,52 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Project2.MainPage">
     <ScrollView>
+      
         <VerticalStackLayout>
-            <Label Text="Welcome,Enter your name" HorizontalOptions="Center" VerticalOptions="Center" FontAttributes ="Bold" FontSize="30" TextColor="AliceBlue"/>
+            <VerticalStackLayout>
 
+                <Label Text="Movie Explorer"
+                   HorizontalOptions="Center"
+                   FontAttributes="Bold"
+                   FontSize="30"/>
+            
+            <Label Text="Welcome,Enter your name" HorizontalOptions="Center" VerticalOptions="Center" FontAttributes ="Bold" FontSize="30" TextColor="AliceBlue"/>
+                </VerticalStackLayout>
+<!--This is the part where user's will be able to see their history and favorites-->
+            <VerticalStackLayout x:Name="UserSection"
+                                 IsVisible="False">
+                <Label Text="Your History + Favorites"
+                      FontAttributes="Bold"
+                      FontSize="19"/>
+                <HorizontalStackLayout>
+                    <Button x:Name="FavoriteButton"
+                            Text="Favorites"
+                            Clicked="OnFavoriteClicked"
+                            HeightRequest="40"
+                            WidthRequest="100"
+                            />
+
+                <Button x:Name="ViewedButton"
+         Text="History"
+         Clicked="OnViewedClicked"
+         HeightRequest="40"
+         WidthRequest="100"
+         />
+                    </HorizontalStackLayout>
+            </VerticalStackLayout>
+                    <VerticalStackLayout>
             <Label Text="Name:"/>
-            <Entry x:Name="NameBox" Text="{Binding Name}"/>
-            <HorizontalStackLayout>
-                <Button x:Name="Name" Clicked ="OnStartClicked" />
+                    <HorizontalStackLayout>
+            <Entry x:Name="NameBox" 
+                   Text="{Binding Name}"
+                   Placeholder="Enter your name"
+                   />
+            
+                <Button x:Name="Name" 
+                        Clicked ="OnStartClicked"
+                        Text="Save"
+                        HeightRequest="50"
+                        WidthRequest="100"/>
             </HorizontalStackLayout>
             <!--searchbar function-->
             <SearchBar
@@ -40,8 +79,9 @@ SelectedItem="{Binding SelectedMovie}"
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+                </VerticalStackLayout>
 
-        </VerticalStackLayout>
+                </VerticalStackLayout>
     </ScrollView>
 
 </ContentPage>
