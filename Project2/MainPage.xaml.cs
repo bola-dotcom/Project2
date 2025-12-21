@@ -70,8 +70,13 @@ namespace Project2
                 await DisplayAlert("Favorite", "You havent favorited anything", "Alright");
                 return;
             }
-            var favorite = string.Join("\n", viewModel.FavoriteMovies.Select(m => $"{m.title}({m.year})"));
-            await DisplayAlert($"{viewModel.UserName} Favorites", favorite, "Alright");
+            var favorite =viewModel.FavoriteMovies
+                .Where(m => m.FavoritedAt != null)
+                .OrderByDescending(m => m.FavoritedAt)
+                .Select(m => $"{m.FavoritedAt:MM/dd HH:mm} - {m.title} ({m.year})")
+                .ToList();
+            var favoriteText = string.Join("\n\n", favorite);
+            await DisplayAlert($"{viewModel.UserName} Favorites", favoriteText, "Alright");
         }
 
         private async void OnViewedClicked(object sender, EventArgs e)
