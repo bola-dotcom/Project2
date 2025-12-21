@@ -44,6 +44,7 @@ namespace Project2
                 FilterMovie();
             }
         }
+
         public Command<string> SearchCommand { get; set; }
 
         public movieViewModel(string userName)
@@ -55,9 +56,14 @@ namespace Project2
                 SearchMovie = text;
             });
             
-            History = new ObservableCollection<MovieHistory>(HistorySandL.Load(UserName));
+            var loadedHistory = HistorySandL.Load(UserName);
+            foreach(var item in loadedHistory)
+            {
+                History.Add(item);
+            }
            
         }
+
         private Movie _selectedMovie;
         public Movie SelectedMovie
         {
@@ -69,18 +75,18 @@ namespace Project2
                     OnPropertyChanged(nameof(SelectedMovie));
 
                     _selectedMovie = value;
-                    if (!value.IsViewed)
+                   /* if (!value.IsViewed) 
                     {
                         value.IsViewed = true;
                         if (!ViewMovies.Contains(value))
                         {
                             ViewMovies.Add(value);
-                        }
+                        }*/
                         MarkAsViewed(value);
                     }
                 }
             }
-        }
+        
 
         //this stores the name of the user
         private string _Name = "";
@@ -171,23 +177,7 @@ m.title.Contains(SearchMovie, StringComparison.OrdinalIgnoreCase) ||
                 Movies.Add(movie);
 
         }
-       /* private void _PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if(sender is Movie movie && e.PropertyName == nameof(Movie.IsFavorite))
-            {
-                if(movie.IsFavorite && !FavoriteMovies.Contains(movie))
-                     FavoriteMovies.Add(movie);
-                else if(!movie.IsFavorite && FavoriteMovies.Contains(movie))
-                    FavoriteMovies.Remove(movie);
-            }
-            else if(e.PropertyName == nameof(Movie.IsViewed) && movie.IsViewed)
-            {
-                if (!ViewMovies.Contains(movie))
-                {
-                    ViewMovies.Add(movie);
-                }
-            }
-        }*/
+      
         public IEnumerable<Movie> ViewedRecently =>
             Movies
             .Where(m => m.ViewedAt != null)
@@ -197,19 +187,7 @@ m.title.Contains(SearchMovie, StringComparison.OrdinalIgnoreCase) ||
   Movies
   .Where(m => m.FavoritedAt != null)
   .OrderByDescending(m => m.FavoritedAt);
-        // public event PropertyChangedEventHandler PropertyChanged;
-        //  protected void OnPropertyChanged([CallerMemberName] string name = null)
-        //  => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-
-       /* public movieViewModel()
-        {
-            Movies = new ObservableCollection<Movie>();
-            History = new ObservableCollection<MovieHistory>(HistorySandL.Load());
-            foreach (var movie in Movies)
-            {
-                movie.PropertyChanged += MoviePropertyChanged;
-            }
-        }*/
+        
         private void MoviePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (sender is Movie movie)
@@ -237,6 +215,11 @@ m.title.Contains(SearchMovie, StringComparison.OrdinalIgnoreCase) ||
             if (!movie.IsViewed)
             {
                 movie.IsViewed = true;
+
+                if(!ViewMovies.Contains(movie))
+                {
+                    ViewMovies.Add(movie);
+                }
                 AddHistory(movie, "Viewed");
             }
         }

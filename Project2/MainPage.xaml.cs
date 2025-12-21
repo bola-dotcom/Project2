@@ -82,13 +82,26 @@ namespace Project2
 
                 return;
             }
-            if (viewModel.History.Count == 0)
+
+            if (viewModel.ViewMovies.Count == 0 && viewModel.History.Count(h => h.Action == "Viewed") == 0)
             {
                 await DisplayAlert("History", "You havent viewed anything", "Alright");
                 return;
             }
-            var history = string.Join("\n", viewModel.History.OrderByDescending(h => h.Timestamp).Select(h => $"{h.Timestamp:MM/dd HH:mm} - {h.Action}: {h.title}"));
-            await DisplayAlert($"{viewModel.UserName}'s History", history, "Alright");
+
+            var viewedMovies = string.Join("\n", viewModel.ViewMovies.Select(m => $"{m.title}({m.year})"));
+
+            var viewedHistory = viewModel.History
+                .Where(h => h.Action == "Viewed")
+                .OrderByDescending(h => h.Timestamp)
+                .Select(h => $"{h.Timestamp:MM/dd HH:mm} - {h.Action}: {h.title}")
+                .ToList();
+
+            var historyText = string.Join("\n", viewedHistory);
+
+            var message = $"Viewed Movies:\n{viewedMovies}\n\nViewing History:\n{historyText}";
+           
+            await DisplayAlert($"{viewModel.UserName}'s Viewed Content", message, "Alright");
         }
 
         private async Task showFavorite()
@@ -126,8 +139,9 @@ namespace Project2
                     ((CollectionView)sender).SelectedItem = null;
 
                     _isNavigating = true;
-                    selectedMovie.IsViewed = true;
-                    viewModel.MarkAsViewed(selectedMovie);
+                   
+                    viewModel.SelectedMovie = selectedMovie;
+
                     var parameters = new Dictionary<string, object>
             {
                 {"Movie" , selectedMovie}
@@ -136,7 +150,6 @@ namespace Project2
                 }
                 finally
                 {
-                    ((CollectionView)sender).SelectedItem = null;
 
                     _isNavigating = false;
 
