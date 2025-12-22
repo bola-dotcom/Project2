@@ -13,25 +13,37 @@ namespace Project2
 {
     public class movieViewModel:INotifyPropertyChanged
     {
+        //stores the current users name
         public string UserName {  get; set; }
+
+        //for downloading data from API
         private HttpClient _httpClient = new HttpClient();
+
+        //list of all movies
         private List<Movie> allMovies = new List<Movie>();
+
+        //for when properties change
         public event PropertyChangedEventHandler? PropertyChanged;
 
 
         //it adds it to the collectionView
         public ObservableCollection<Movie> Movies { get; set; } = new ObservableCollection<Movie>();
+        //movies viewed
         public ObservableCollection<Movie> ViewMovies { get; set; } = new ObservableCollection<Movie>();
+        //movies favorited
         public ObservableCollection<Movie> FavoriteMovies { get; set; } = new ObservableCollection<Movie>();
+        //history
         public ObservableCollection<MovieHistory> History { get; set; } = new ObservableCollection<MovieHistory>();
 
 
 
-
+        //notifies that property has changed
         protected virtual void OnPropertyChanged(string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        //when users enter a search
 
         private string searchMovie;
         public string SearchMovie
@@ -45,17 +57,21 @@ namespace Project2
             }
         }
 
+        //runs when user searchees
         public Command<string> SearchCommand { get; set; }
 
+        
         public movieViewModel(string userName)
         {
             UserName = userName;
             Name = userName;    
+            //updates SearchMovie
             SearchCommand = new Command<string>((text) =>
             {
                 SearchMovie = text;
             });
             
+            //load history
             var loadedHistory = HistorySandL.Load(UserName);
             foreach(var item in loadedHistory)
             {
@@ -64,6 +80,7 @@ namespace Project2
            
         }
 
+        //currently selected movie
         private Movie _selectedMovie;
         public Movie SelectedMovie
         {
@@ -102,7 +119,7 @@ namespace Project2
 
 
 
-
+        //downloads movie from JSON
         public async void downloadFile()
         {
             //if this is the first time the application is opened
@@ -143,20 +160,21 @@ namespace Project2
         }
 
 
-
+        //ads movie to collection
         public void EnterMovies(List<Movie> movieList)
         {
             allMovies = movieList;
             Movies.Clear();
             foreach (var movie in allMovies)
             {
+
                 movie.PropertyChanged += MoviePropertyChanged;
                 Movies.Add(movie);
             }
         }
         private void FilterMovie()
         {
-
+            //show movies if user hasnt typed anything
             if (string.IsNullOrWhiteSpace(SearchMovie))
             {
                 Movies.Clear();
@@ -164,6 +182,7 @@ namespace Project2
                     Movies.Add(movie);
                 return;
             }
+            //filter movies based on title, genre, year and other
             var filtered = allMovies
  .Where(m =>
 m.title.Contains(SearchMovie, StringComparison.OrdinalIgnoreCase) ||
@@ -178,11 +197,14 @@ m.title.Contains(SearchMovie, StringComparison.OrdinalIgnoreCase) ||
 
         }
       
+        //recently viewed movies and when it was viewed
         public IEnumerable<Movie> ViewedRecently =>
             Movies
             .Where(m => m.ViewedAt != null)
             .OrderByDescending(m => m.ViewedAt);
 
+
+        //same thing but with favorited
         public IEnumerable<Movie> FavoritedRecently =>
   Movies
   .Where(m => m.FavoritedAt != null)

@@ -11,8 +11,10 @@
                    HorizontalOptions="Center"
                    FontAttributes="Bold"
                    FontSize="30"/>
-            
-            <Label Text="Welcome,Enter your name" HorizontalOptions="Center" VerticalOptions="Center" FontAttributes ="Bold" FontSize="30" TextColor="AliceBlue"/>
+                
+            <!--The message that appears when ran-->
+            <Label Text="Welcome,Enter your name" HorizontalOptions="Center" VerticalOptions="Center" FontAttributes ="Bold" TextColor="LightCyan" FontSize="30" />
+                
                 </VerticalStackLayout>
 <!--This is the part where user's will be able to see their history and favorites-->
             <VerticalStackLayout x:Name="UserSection"
@@ -36,6 +38,8 @@
          />
                     </HorizontalStackLayout>
             </VerticalStackLayout>
+            
+            
                     <VerticalStackLayout>
             <Label Text="Name:"/>
                     <HorizontalStackLayout>
@@ -57,15 +61,18 @@
            SearchCommandParameter = "{Binding Text, Source ={RelativeSource Self}}"/>
 
             <CollectionView ItemsSource="{Binding Movies}"
-SelectionMode="Single"
+SelectionMode="Single" 
 SelectedItem="{Binding SelectedMovie}"
                 SelectionChanged="selectionChanged">
-                     
+                    <!-- Means you can only select one item-->
 
-                <CollectionView.ItemTemplate>
+                
+                
+                <!-- For how each movie will look-->
+                    <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <StackLayout Padding="10">
-                            
+                            <!-- Checkbox to favorite/unfavorite a movie-->
                                 <CheckBox
                                     IsChecked ="{Binding IsFavorite}"
                                     VerticalOptions ="Center"/>

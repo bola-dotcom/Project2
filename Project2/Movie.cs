@@ -55,7 +55,7 @@ namespace Project2
             }
         }
 
-        public DateTime? ViewedAt { get => favoritedAt;
+        public DateTime? ViewedAt { get => viewedAt;
             set
             {
                 if (viewedAt != value)
