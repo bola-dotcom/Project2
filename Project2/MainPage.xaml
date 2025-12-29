@@ -1,11 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Project2.MainPage">
+             x:Class="Project2.MainPage"
+             Title="Movie Explorer"
+             BackgroundColor="Black">
     <ScrollView>
       
         <VerticalStackLayout>
-            <VerticalStackLayout>
+            <VerticalStackLayout Spacing="15">
 
                 <Label Text="Movie Explorer"
                    HorizontalOptions="Center"
@@ -18,41 +20,44 @@
                 </VerticalStackLayout>
 <!--This is the part where user's will be able to see their history and favorites-->
             <VerticalStackLayout x:Name="UserSection"
-                                 IsVisible="False">
-                <Label Text="Your History + Favorites"
+                                 IsVisible="False"
+                                 >
+                <Label Text="Profile"
                       FontAttributes="Bold"
                       FontSize="19"/>
-                <HorizontalStackLayout>
+                <HorizontalStackLayout Spacing="40">
                     <Button x:Name="FavoriteButton"
                             Text="Favorites"
                             Clicked="OnFavoriteClicked"
                             HeightRequest="40"
                             WidthRequest="100"
-                            />
+                            BackgroundColor="AliceBlue" />
 
                 <Button x:Name="ViewedButton"
          Text="History"
          Clicked="OnViewedClicked"
          HeightRequest="40"
          WidthRequest="100"
-         />
+        BackgroundColor="AliceBlue" />
                     </HorizontalStackLayout>
             </VerticalStackLayout>
             
             
-                    <VerticalStackLayout>
+                    <VerticalStackLayout
+                        Spacing="15">
             <Label Text="Name:"/>
-                    <HorizontalStackLayout>
+                <HorizontalStackLayout Spacing="5">
             <Entry x:Name="NameBox" 
                    Text="{Binding Name}"
                    Placeholder="Enter your name"
-                   />
+                  WidthRequest="500" />
             
                 <Button x:Name="Name" 
                         Clicked ="OnStartClicked"
                         Text="Save"
                         HeightRequest="50"
-                        WidthRequest="100"/>
+                        WidthRequest="100"
+                        BackgroundColor="AliceBlue"/>
             </HorizontalStackLayout>
             <!--searchbar function-->
             <SearchBar
