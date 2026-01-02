@@ -9,13 +9,10 @@
         <VerticalStackLayout>
             <VerticalStackLayout Spacing="15">
 
-                <Label Text="Movie Explorer"
-                   HorizontalOptions="Center"
-                   FontAttributes="Bold"
-                   FontSize="30"/>
+                
                 
             <!--The message that appears when ran-->
-            <Label Text="Welcome,Enter your name" HorizontalOptions="Center" VerticalOptions="Center" FontAttributes ="Bold" TextColor="LightCyan" FontSize="30" />
+            <Label Text="Welcome" HorizontalOptions="Center" VerticalOptions="Center" FontAttributes ="Bold" TextColor="LightCyan" FontSize="30" />
                 
                 </VerticalStackLayout>
 <!--This is the part where user's will be able to see their history and favorites-->
@@ -45,7 +42,7 @@
             
                     <VerticalStackLayout
                         Spacing="15">
-            <Label Text="Name:"/>
+            <Label Text="Enter your Name:"/>
                 <HorizontalStackLayout Spacing="5">
             <Entry x:Name="NameBox" 
                    Text="{Binding Name}"
